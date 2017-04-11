@@ -6,11 +6,11 @@ import com.khludkova.plugins.jira.parentheses.ParenthesisChecker.ParenthesesEnum
 /**
  * Created by Tanya on 11.04.2017.
  */
-public interface ParenthesisCheckerInt {
+public interface ParenthesisCheckerInterface {
 
     boolean areParenthesesBalanced(String string) throws FieldValidationException;
 
-    ParenthesesEnum checkIfCountOfParenthesesIsBalanced(String string);
+    ParenthesesEnum validateParenthesesCountIsEqual(String string);
 
     int calculateParentheses(String string, String parenthesis);
 }

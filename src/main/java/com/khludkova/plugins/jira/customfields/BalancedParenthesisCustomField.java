@@ -11,6 +11,7 @@ import com.khludkova.plugins.jira.parentheses.ParenthesisChecker;
 
 @Scanned
 public class BalancedParenthesisCustomField extends AbstractSingleFieldType<String> {
+    private ParenthesisChecker parenthesisChecker = new ParenthesisChecker();
 
     @ComponentImport CustomFieldValuePersister customFieldValuePersister;
     @ComponentImport GenericConfigManager genericConfigManager;
@@ -40,15 +41,14 @@ public class BalancedParenthesisCustomField extends AbstractSingleFieldType<Stri
 
     public String getSingularObjectFromString(String string) throws FieldValidationException {
         if (string == null) return null;
-        ParenthesisChecker parenthesisChecker = new ParenthesisChecker();
-        ParenthesisChecker.ParenthesesEnum checkedParentheses = parenthesisChecker.checkIfCountOfParenthesesIsBalanced(string);
+        ParenthesisChecker.ParenthesesEnum checkedParentheses = parenthesisChecker.validateParenthesesCountIsEqual(string);
         switch (checkedParentheses) {
-            case MORE_OPENED_PARENTHESES: throw new FieldValidationException("Not enough closed parentheses");
-            case MORE_CLOSED_PARENTHESES: {
+            case EXTRA_OPENED_PARENTHESES: throw new FieldValidationException("Not enough closed parentheses");
+            case EQUALS_PARENTHESES: {
                     if (parenthesisChecker.areParenthesesBalanced(string)) return string;
-                    else throw new FieldValidationException("You made mistake in order of parentheses");
+                    else throw new FieldValidationException("Parentheses order not valid");
                 }
-            case EQUALS_PARENTHESES:  throw new FieldValidationException("Too much closed parentheses");
+            case EXTRA_CLOSED_PARENTHESES:  throw new FieldValidationException("Extra closed parentheses");
             }
         return string;
     }
