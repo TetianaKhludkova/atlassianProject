@@ -10,7 +10,7 @@ public class ParenthesisChecker implements ParenthesisCheckerInterface {
     static final private String openedParenthesis = "(";
     static final private String closedParenthesis = ")";
 
-    public enum ParenthesesEnum{
+    public enum ParenthesesValidationEnum {
         EXTRA_OPENED_PARENTHESES, EXTRA_CLOSED_PARENTHESES, EQUALS_PARENTHESES
     }
 
@@ -18,6 +18,7 @@ public class ParenthesisChecker implements ParenthesisCheckerInterface {
     @Override
     public boolean areParenthesesBalanced(String inputString) throws FieldValidationException {
         int indexOfOpenedParenthesis = 0, indexOfClosedParenthesis = 0;
+
 
         while (true){
             indexOfOpenedParenthesis = inputString.indexOf(openedParenthesis, indexOfOpenedParenthesis);
@@ -30,13 +31,13 @@ public class ParenthesisChecker implements ParenthesisCheckerInterface {
     }
 
     @Override
-    public ParenthesesEnum validateParenthesesCountIsEqual(String inputString){
+    public ParenthesesValidationEnum validateParenthesesNumber(String inputString){
         int countOfOpenedParentheses = calculateParentheses(inputString, openedParenthesis);
         int countOfClosedParentheses = calculateParentheses(inputString, closedParenthesis);
 
-        if (countOfOpenedParentheses > countOfClosedParentheses) return ParenthesesEnum.EXTRA_OPENED_PARENTHESES;
-        else if(countOfOpenedParentheses == countOfClosedParentheses) return ParenthesesEnum.EQUALS_PARENTHESES;
-        else return ParenthesesEnum.EXTRA_CLOSED_PARENTHESES;
+        if (countOfOpenedParentheses > countOfClosedParentheses) return ParenthesesValidationEnum.EXTRA_OPENED_PARENTHESES;
+        else if(countOfOpenedParentheses == countOfClosedParentheses) return ParenthesesValidationEnum.EQUALS_PARENTHESES;
+        else return ParenthesesValidationEnum.EXTRA_CLOSED_PARENTHESES;
     }
 
     @Override

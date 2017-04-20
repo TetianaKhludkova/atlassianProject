@@ -9,41 +9,51 @@ import com.atlassian.plugin.spring.scanner.annotation.component.Scanned;
 import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
 import com.khludkova.plugins.jira.parentheses.ParenthesisChecker;
 
+import javax.inject.Inject;
+
 @Scanned
-public class BalancedParenthesisCustomField extends AbstractSingleFieldType<String> {
-    private ParenthesisChecker parenthesisChecker = new ParenthesisChecker();
+public class BalancedParenthesisCustomField extends AbstractSingleFieldType<String>  {
+    private final ParenthesisChecker parenthesisChecker = new ParenthesisChecker();
 
     @ComponentImport CustomFieldValuePersister customFieldValuePersister;
     @ComponentImport GenericConfigManager genericConfigManager;
 
-    public BalancedParenthesisCustomField(CustomFieldValuePersister customFieldValuePersister, GenericConfigManager genericConfigManager) {
+    @Inject
+    public BalancedParenthesisCustomField(CustomFieldValuePersister customFieldValuePersister,
+                                          GenericConfigManager genericConfigManager) {
         super(customFieldValuePersister, genericConfigManager);
         this.customFieldValuePersister = customFieldValuePersister;
         this.genericConfigManager = genericConfigManager;
     }
 
-    protected PersistenceFieldType getDatabaseType() {
+    @Override
+    public PersistenceFieldType getDatabaseType() {
         return PersistenceFieldType.TYPE_UNLIMITED_TEXT;
     }
 
-    protected Object getDbValueFromObject(String customFieldObject) {
+    @Override
+    public Object getDbValueFromObject(String customFieldObject) {
         return getStringFromSingularObject(customFieldObject);
     }
 
-    protected String getObjectFromDbValue(Object dbValue) throws FieldValidationException {
+    @Override
+    public String getObjectFromDbValue(Object dbValue) throws FieldValidationException {
         return getSingularObjectFromString((String) dbValue);
     }
 
+    @Override
     public String getStringFromSingularObject(String singularObject) {
         if (singularObject==null)return null;
         else return singularObject;
     }
 
+    @Override
     public String getSingularObjectFromString(String string) throws FieldValidationException {
         if (string == null) return null;
-        ParenthesisChecker.ParenthesesEnum checkedParentheses = parenthesisChecker.validateParenthesesCountIsEqual(string);
+        ParenthesisChecker.ParenthesesValidationEnum checkedParentheses =
+                parenthesisChecker.validateParenthesesNumber(string);
         switch (checkedParentheses) {
-            case EXTRA_OPENED_PARENTHESES: throw new FieldValidationException("Not enough closed parentheses");
+            case EXTRA_OPENED_PARENTHESES: throw new FieldValidationException("Extra opened parentheses");
             case EQUALS_PARENTHESES: {
                     if (parenthesisChecker.areParenthesesBalanced(string)) return string;
                     else throw new FieldValidationException("Parentheses order not valid");
